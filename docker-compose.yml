@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: variants/debian/trixie/Dockerfile
+      args:
+        PERFORMANCE_TOOLS: ${PERFORMANCE_TOOLS:-false}
     environment:
       - POPULATE_INBOX=true
       - MEASURE_SIZE=${MEASURE_SIZE:-false}

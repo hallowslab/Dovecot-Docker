@@ -2,13 +2,17 @@ FROM debian:trixie-slim
 
 LABEL maintainer="HallowsTechLab"
 LABEL description="Dovecot IMAP test server with virtual users for imapsync testing"
+ARG PERFORMANCE_TOOLS=false
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     dovecot-imapd \
     python3 \
     netcat-openbsd \
-    && rm -rf /var/lib/apt/lists/*
+    && if [ "$PERFORMANCE_TOOLS" = "true" ]; then \
+    apt-get install -y --no-install-recommends sysstat strace; \
+    fi && rm -rf /var/lib/apt/lists/*
+
 
 # Create vmail user for virtual mailbox ownership
 RUN groupadd -g 1000 vmail && \
