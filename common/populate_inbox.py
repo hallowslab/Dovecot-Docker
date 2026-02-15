@@ -270,9 +270,13 @@ def populate_user(args):
 
     for _ in range(num_messages):
         msg = generate_message(email)
+        msg_bytes = msg.encode("utf-8")
         filepath = os.path.join(maildir_new, maildir_filename())
-        with open(filepath, "wb", buffering=1024 * 1024) as f:
-            f.write(msg.encode("utf-8"))
+
+        fd = os.open(filepath, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, msg_bytes)
+        os.close(fd)
+
         count += 1
 
     return count
