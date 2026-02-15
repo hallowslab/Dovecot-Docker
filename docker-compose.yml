@@ -41,6 +41,32 @@ services:
       start_period: 5s
       retries: 3
 
+  webmail-source:
+    image: roundcube/roundcubemail:latest
+    depends_on:
+      - source
+    environment:
+      ROUNDCUBE_DEFAULT_HOST: "source"
+      ROUNDCUBE_DES_KEY: "${ROUNDCUBE_DES_KEY:-SOME_RANDOM_SECURE_KEY}"
+    ports:
+      - "8080:80"
+    volumes:
+      - roundcube-data-source:/var/roundcube
+
+  webmail-destination:
+    image: roundcube/roundcubemail:latest
+    depends_on:
+      - destination
+    environment:
+      ROUNDCUBE_DEFAULT_HOST: "destination"
+      ROUNDCUBE_DES_KEY: "${ROUNDCUBE_DES_KEY:-SOME_RANDOM_SECURE_KEY}"
+    ports:
+      - "8081:80"
+    volumes:
+      - roundcube-data-destination:/var/roundcube
+
 volumes:
   source-mail:
   dest-mail:
+  roundcube-data-source:
+  roundcube-data-destination:
