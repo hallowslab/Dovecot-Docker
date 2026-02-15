@@ -1,0 +1,44 @@
+services:
+  source:
+    build:
+      context: .
+      dockerfile: variants/debian/trixie/Dockerfile
+    environment:
+      - POPULATE_INBOX=true
+      - MEASURE_SIZE=${MEASURE_SIZE:-false}
+      - MIN_MESSAGES=${MIN_MESSAGES:-50}
+      - MAX_MESSAGES=${MAX_MESSAGES:-100}
+      - POPULATE_WORKERS=${POPULATE_WORKERS:-0}
+    volumes:
+      - ./users.csv:/users.csv:ro
+      - source-mail:/mail
+    ports:
+      - "1143:143"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "143" ]
+      interval: 10s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+  destination:
+    build:
+      context: .
+      dockerfile: variants/debian/trixie/Dockerfile
+    environment:
+      - POPULATE_INBOX=false
+    volumes:
+      - ./users.csv:/users.csv:ro
+      - dest-mail:/mail
+    ports:
+      - "2143:143"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "143" ]
+      interval: 10s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+volumes:
+  source-mail:
+  dest-mail:
